@@ -7,10 +7,10 @@ To write a program to predict the type of species of the Iris flower using the S
 2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
 ## Algorithm
-1. Split the dataset into features (X) and target (y), and preprocess the data.
-2. Split data into training and testing sets.
-3. Train the Decision Tree Classifier using the training data.
-4. Predict and evaluate the model on the test data, then visualize the decision tre
+1. Load the Iris dataset and split it into training and testing sets.
+2. Standardize the feature values using StandardScaler.
+3. Initialize and train the SGD classifier on the training data.
+4. Predict species on the test set and evaluate using accuracy and classification report.
 ## Program:
 ```
 /*
@@ -20,46 +20,54 @@ RegisterNumber:  212223040121
 */
 
 import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
-from sklearn import tree
+import seaborn as sns
 
-# Load dataset
-file_path = 'Employee.csv'
-data = pd.read_csv(file_path)
+# Load the Iris dataset
+iris = load_iris()
 
-# Preprocessing: Convert categorical variables to numerical
-data = pd.get_dummies(data)
+# Create a Pandas DataFrame
+df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+df['target'] = iris.target
 
-# Split features and target ('left' is the churn indicator)
-X = data.drop('left', axis=1)
-y = data['left']
+# Display the first few rows of the dataset
+print(df.head())
 
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+# Split the data into features (X) and target (y)
+X = df.drop('target', axis=1)
+y = df['target']
 
-# Train Decision Tree
-clf = DecisionTreeClassifier()
-clf.fit(X_train, y_train)
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Predict and evaluate
-y_pred = clf.predict(X_test)
-print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
-print(classification_report(y_test, y_pred))
+# Create an SGD classifier with default parameters
+sgd_clf = SGDClassifier(max_iter=1000, tol=1e-3)
+
+# Train the classifier on the training data
+sgd_clf.fit(X_train, y_train)
+
+# Make predictions on the testing data
+y_pred = sgd_clf.predict(X_test)
+
+# Evaluate the classifier's accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.3f}")
+
+# Calculate the confusion matrix
+cm = confusion_matrix(y_test, y_pred)
 print("Confusion Matrix:")
-print(confusion_matrix(y_test, y_pred))
+print(cm)
 
-# Plot Decision Tree
-plt.figure(figsize=(20,10))
-tree.plot_tree(clf, feature_names=X.columns, class_names=['Stayed', 'Left'], filled=True)
-plt.show()
+
 
 ```
 
 ## Output:
-**![image](https://github.com/user-attachments/assets/69678c68-1fd3-4817-b000-c7f3e2c940c4)
+![image](https://github.com/user-attachments/assets/8829cf44-a820-40ca-bc7e-4a3feef49286)
 
 
 
